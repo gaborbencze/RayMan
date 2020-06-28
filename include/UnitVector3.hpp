@@ -11,8 +11,11 @@ namespace RayMan {
     double y() const noexcept { return vec.y(); }
     double z() const noexcept { return vec.z(); }
 
+    Vector3 ToVector3() const noexcept { return vec; }
+
   private:
     Vector3 vec;
   };
 
+  std::ostream& operator<<(std::ostream& os, const UnitVector3& v);
 }  // namespace RayMan

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iosfwd>
 #include <stdexcept>
 
 namespace RayMan {
@@ -21,6 +22,8 @@ namespace RayMan {
       _z += v.z();
       return *this;
     }
+
+    constexpr Vector3 operator-() const noexcept { return Vector3(-_x, -_y, -_z); }
 
     constexpr Vector3& operator*=(const double t) noexcept {
       _x *= t;
@@ -64,4 +67,8 @@ namespace RayMan {
     return result;
   }
 
+  double Dot(const Vector3& u, const Vector3& v);
+  Vector3 Cross(const Vector3& u, const Vector3& v);
+
+  std::ostream& operator<<(std::ostream& os, const Vector3& v);
 }  // namespace RayMan
