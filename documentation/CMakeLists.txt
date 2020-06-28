@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-project(GreeterDocs)
+project(RayManDocs)
 
 # ---- Dependencies ----
 
 include(../cmake/CPM.cmake)
 
 CPMAddPackage(
-  NAME Greeter
+  NAME RayMan
   SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/..
 )
 
@@ -23,8 +23,8 @@ set(BUILD_DOCUMENTATION ON CACHE INTERNAL "")
 include(${StableCoder-cmake-scripts_SOURCE_DIR}/doxygen.cmake)
 
 # set Doxyfile variables
-set(DOXYGEN_PROJECT_NAME Greeter)
-set(DOXYGEN_PROJECT_VERSION ${Greeter_VERSION})
+set(DOXYGEN_PROJECT_NAME RayMan)
+set(DOXYGEN_PROJECT_VERSION ${RayMan_VERSION})
 set(DOXYGEN_PROJECT_ROOT "${CMAKE_CURRENT_LIST_DIR}/..")
 
 # see https://github.com/StableCoder/cmake-scripts#doxygen-doxygencmake for additional options
