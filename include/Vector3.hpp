@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdexcept>
+
 namespace RayMan {
   class Vector3 {
   public:
@@ -27,7 +29,11 @@ namespace RayMan {
       return *this;
     }
 
-    constexpr Vector3& operator/=(const double t) noexcept {
+    constexpr Vector3& operator/=(const double t) {
+      if (t == 0) {
+        throw std::invalid_argument("t");
+      }
+
       _x /= t;
       _y /= t;
       _z /= t;
@@ -52,7 +58,7 @@ namespace RayMan {
     return result;
   }
 
-  constexpr Vector3 operator/(const Vector3& v, const double t) noexcept {
+  constexpr Vector3 operator/(const Vector3& v, const double t) {
     Vector3 result = v;
     result /= t;
     return result;
