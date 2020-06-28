@@ -1,4 +1,6 @@
+#include <Camera.hpp>
 #include <Image.hpp>
+#include <Ray.hpp>
 #include <iostream>
 
 static constexpr int MaxColorValue = 255;
@@ -25,16 +27,24 @@ static void PrintPPMImage(std::ostream& os, const RayMan::Image& img) {
   }
 }
 
-static RayMan::Image CreateSampleImage(int width, int height) {
+static RayMan::Color RayColor(const RayMan::Ray& ray) {
+  const auto t = 0.5 * (ray.GetDirection().y() + 1);
+  return RayMan::Interpolate(RayMan::Color(0.5, 0.7, 1), RayMan::Color(1, 1, 1), t);
+}
+
+static RayMan::Image RenderImage(int width, int height) {
   RayMan::Image img(height, width);
+  RayMan::Camera camera;
+
   for (int row = 0; row < img.GetHeight(); ++row) {
     for (int col = 0; col < img.GetWidth(); ++col) {
-      img.Set(row, col,
-              RayMan::Color(static_cast<double>(col) / (width - 1),
-                            static_cast<double>(row) / (height - 1), 0.25));
+      const auto u = static_cast<double>(col) / (width - 1);
+      const auto v = static_cast<double>(row) / (height - 1);
+      const auto ray = camera.GetRay(u, v);
+      img.Set(row, col, RayColor(ray));
     }
   }
   return img;
 }
 
-int main() { PrintPPMImage(std::cout, CreateSampleImage(1920, 1080)); }
+int main() { PrintPPMImage(std::cout, RenderImage(1920, 1080)); }
