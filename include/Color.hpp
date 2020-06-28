@@ -14,4 +14,6 @@ namespace RayMan {
     double _g;
     double _b;
   };
+
+  Color Interpolate(const Color& from, const Color& to, const double t);
 }  // namespace RayMan
