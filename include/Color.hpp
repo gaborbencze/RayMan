@@ -1,3 +1,5 @@
+#pragma once
+
 namespace RayMan {
   class Color {
   public:
