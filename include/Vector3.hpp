@@ -3,7 +3,7 @@
 namespace RayMan {
   class Vector3 {
   public:
-    constexpr Vector3(double x, double y, double z) : _x(x), _y(y), _z(z) {}
+    constexpr Vector3(double x, double y, double z) noexcept : _x(x), _y(y), _z(z) {}
     static const Vector3 Zero;
 
     constexpr double x() const noexcept { return _x; }
@@ -13,6 +13,13 @@ namespace RayMan {
     double length() const noexcept;
     constexpr double length_square() const noexcept { return _x * _x + _y * _y + _z * _z; }
 
+    constexpr Vector3& operator+=(const Vector3& v) noexcept {
+      _x += v.x();
+      _y += v.y();
+      _z += v.z();
+      return *this;
+    }
+
     constexpr Vector3& operator*=(const double t) noexcept {
       _x *= t;
       _y *= t;
@@ -20,7 +27,7 @@ namespace RayMan {
       return *this;
     }
 
-    constexpr Vector3& operator/=(const double t) {
+    constexpr Vector3& operator/=(const double t) noexcept {
       _x /= t;
       _y /= t;
       _z /= t;
@@ -33,13 +40,19 @@ namespace RayMan {
     double _z;
   };
 
-  constexpr Vector3 operator*(const Vector3& v, const double t) {
+  constexpr Vector3 operator+(const Vector3& u, const Vector3& v) noexcept {
+    Vector3 result = u;
+    result += v;
+    return result;
+  }
+
+  constexpr Vector3 operator*(const Vector3& v, const double t) noexcept {
     Vector3 result = v;
     result *= t;
     return result;
   }
 
-  constexpr Vector3 operator/(const Vector3& v, const double t) {
+  constexpr Vector3 operator/(const Vector3& v, const double t) noexcept {
     Vector3 result = v;
     result /= t;
     return result;
