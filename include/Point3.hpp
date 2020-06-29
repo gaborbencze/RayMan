@@ -33,7 +33,7 @@ namespace RayMan {
   }
 
   constexpr Vector3 operator-(const Point3& lhs, const Point3& rhs) noexcept {
-    return Vector3(rhs.x() - lhs.x(), rhs.y() - lhs.y(), rhs.z() - lhs.z());
+    return Vector3(lhs.x() - rhs.x(), lhs.y() - rhs.y(), lhs.z() - rhs.z());
   }
 
 }  // namespace RayMan
