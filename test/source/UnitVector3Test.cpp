@@ -1,5 +1,6 @@
 #include <doctest/doctest.h>
 
+#include <TestUtils.hpp>
 #include <UnitVector3.hpp>
 #include <vector>
 
@@ -9,15 +10,8 @@ TEST_CASE("UnitVector construction") {
   const auto CheckUnitVector = [](const Vector3& v, const Vector3& expected) {
     REQUIRE_MESSAGE(expected.length_square() == doctest::Approx(1),
                     "expected vector must have 1 length");
-
     const UnitVector3 u(v);
-    CAPTURE(v);
-    CAPTURE(u);
-    CAPTURE(expected);
-
-    CHECK(u.x() == doctest::Approx(expected.x()));
-    CHECK(u.y() == doctest::Approx(expected.y()));
-    CHECK(u.z() == doctest::Approx(expected.z()));
+    TestUtils::CheckEqual(u.ToVector3(), expected);
   };
 
   SUBCASE("zero vector") { CHECK_THROWS(UnitVector3{Vector3::Zero}); }

@@ -1,5 +1,6 @@
 #include <doctest/doctest.h>
 
+#include <TestUtils.hpp>
 #include <Vector3.hpp>
 #include <array>
 
@@ -20,25 +21,18 @@ TEST_CASE("Multiply vector by scalar") {
 
   SUBCASE("multiply by zero") {
     const Vector3 res = v * 0;
-    CHECK(res.x() == doctest::Approx(0));
-    CHECK(res.y() == doctest::Approx(0));
-    CHECK(res.z() == doctest::Approx(0));
+    TestUtils::CheckEqual(res, Vector3::Zero);
   }
 
   SUBCASE("multiply by one") {
     const Vector3 res = v * 1;
-    CHECK(res.x() == doctest::Approx(v.x()));
-    CHECK(res.y() == doctest::Approx(v.y()));
-    CHECK(res.z() == doctest::Approx(v.z()));
+    TestUtils::CheckEqual(res, v);
   }
 
   SUBCASE("arbitrary multiplier") {
     const double multiplier = 2.5;
     const Vector3 res = v * multiplier;
-
-    CHECK(res.x() == doctest::Approx(-12.5));
-    CHECK(res.y() == doctest::Approx(0));
-    CHECK(res.z() == doctest::Approx(785.375));
+    TestUtils::CheckEqual(res, {-12.5, 0, 785.375});
   }
 }
 
@@ -49,17 +43,13 @@ TEST_CASE("Divide vector by scalar") {
 
   SUBCASE("divide by one") {
     const Vector3 res = v / 1;
-    CHECK(res.x() == doctest::Approx(v.x()));
-    CHECK(res.y() == doctest::Approx(v.y()));
-    CHECK(res.z() == doctest::Approx(v.z()));
+    TestUtils::CheckEqual(res, v);
   }
 
   SUBCASE("arbitrary divisor") {
     const double divisor = 2.5;
     const Vector3 res = v / divisor;
-    CHECK(res.x() == doctest::Approx(0.4));
-    CHECK(res.y() == doctest::Approx(1.256));
-    CHECK(res.z() == doctest::Approx(-16.8));
+    TestUtils::CheckEqual(res, {0.4, 1.256, -16.8});
   }
 }
 
@@ -108,16 +98,8 @@ TEST_CASE("Vector cross product") {
     CAPTURE(u);
     CAPTURE(v);
     CAPTURE(expected);
-
-    const auto result = Cross(u, v);
-    CHECK(result.x() == doctest::Approx(expected.x()));
-    CHECK(result.y() == doctest::Approx(expected.y()));
-    CHECK(result.z() == doctest::Approx(expected.z()));
-
-    const auto result_reversed = Cross(v, u);
-    CHECK(result_reversed.x() == doctest::Approx(-expected.x()));
-    CHECK(result_reversed.y() == doctest::Approx(-expected.y()));
-    CHECK(result_reversed.z() == doctest::Approx(-expected.z()));
+    TestUtils::CheckEqual(Cross(u, v), expected);
+    TestUtils::CheckEqual(Cross(v, u), -expected);
   };
 
   SUBCASE("zero vector") {

@@ -56,6 +56,11 @@ if (NOT TEST_INSTALLED_VERSION)
   endif()
 endif()
 
+target_include_directories(RayManTests
+  PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+)
+
 # ---- Add RayManTests ----
 
 ENABLE_TESTING() 
