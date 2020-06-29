@@ -8,7 +8,7 @@
 namespace RayMan {
 
   namespace TestUtils {
-    void CheckEqual(const Vector3& u, const Vector3& v) {
+    template <typename T> static void CheckEqualImpl(const T& u, const T& v) {
       CAPTURE(u);
       CAPTURE(v);
 
@@ -16,21 +16,9 @@ namespace RayMan {
       CHECK(u.y() == doctest::Approx(v.y()));
       CHECK(u.z() == doctest::Approx(v.z()));
     }
-    void CheckEqual(const UnitVector3& u, const UnitVector3& v) {
-      CAPTURE(u);
-      CAPTURE(v);
 
-      CHECK(u.x() == doctest::Approx(v.x()));
-      CHECK(u.y() == doctest::Approx(v.y()));
-      CHECK(u.z() == doctest::Approx(v.z()));
-    }
-    void CheckEqual(const Point3& u, const Point3& v) {
-      CAPTURE(u);
-      CAPTURE(v);
-
-      CHECK(u.x() == doctest::Approx(v.x()));
-      CHECK(u.y() == doctest::Approx(v.y()));
-      CHECK(u.z() == doctest::Approx(v.z()));
-    }
+    void CheckEqual(const Vector3& u, const Vector3& v) { CheckEqualImpl(u, v); }
+    void CheckEqual(const UnitVector3& u, const UnitVector3& v) { CheckEqualImpl(u, v); }
+    void CheckEqual(const Point3& u, const Point3& v) { CheckEqualImpl(u, v); }
   }  // namespace TestUtils
 }  // namespace RayMan
