@@ -11,7 +11,7 @@ namespace RayMan {
     Point3 GetOrigin() const;
     UnitVector3 GetDirection() const;
 
-    Point3 At(double t) const;
+    Point3 At(double distance) const;
 
   private:
     Point3 origin;

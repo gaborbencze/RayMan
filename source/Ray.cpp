@@ -7,5 +7,5 @@ namespace RayMan {
   Point3 Ray::GetOrigin() const { return origin; }
   UnitVector3 Ray::GetDirection() const { return direction; }
 
-  Point3 Ray::At(double t) const { return GetOrigin() + GetDirection() * t; }
+  Point3 Ray::At(const double distance) const { return GetOrigin() + GetDirection() * distance; }
 }  // namespace RayMan
