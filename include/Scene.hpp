@@ -6,7 +6,7 @@
 
 namespace RayMan {
   class Hittable;
-  class Hit;
+  struct Hit;
   class Ray;
 
   class Scene {
