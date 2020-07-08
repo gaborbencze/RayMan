@@ -4,6 +4,7 @@
 #include <Image.hpp>
 #include <Ray.hpp>
 #include <Scene.hpp>
+#include <cmath>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -11,9 +12,12 @@
 
 static constexpr int MaxColorValue = 255;
 
-static constexpr int ImageWidth = 960;
-static constexpr int ImageHeight = 540;
-static constexpr int SamplesPerPixel = 50;
+static constexpr int ImageWidth = 1920;
+static constexpr int ImageHeight = 1080;
+static constexpr int SamplesPerPixel = 100;
+static constexpr int MaxReflectionDepth = 30;
+
+static constexpr double Pi = 3.14159265358979323846;
 
 static void PrintColor(std::ostream& os, const RayMan::Color& c) {
   const int r = c.r() * MaxColorValue;
@@ -37,10 +41,29 @@ static void PrintPPMImage(std::ostream& os, const RayMan::Image& img) {
   }
 }
 
-static RayMan::Color RayColor(const RayMan::Ray& ray, const RayMan::Scene& world) {
+static double GetRandomDouble(double min, double max) {
+  static std::mt19937 generator;
+  std::uniform_real_distribution<double> distribution(min, max);
+  return distribution(generator);
+}
+
+static RayMan::UnitVector3 GetRandomUnitVector() {
+  const auto a = GetRandomDouble(0, 2 * Pi);
+  const auto z = GetRandomDouble(-1, 1);
+  const auto r = std::sqrt(1 - z * z);
+  return RayMan::UnitVector3(r * std::cos(a), r * std::sin(a), z);
+}
+
+static RayMan::Color RayColor(const RayMan::Ray& ray, const RayMan::Scene& world, int depth) {
+  if (depth == 0) {
+    return RayMan::Color::Black();
+  }
+
   if (const auto hit = world.GetHit(ray)) {
-    return RayMan::Color((hit->normal.x() + 1) * 0.5, (hit->normal.y() + 1) * 0.5,
-                         (hit->normal.z() + 1) * 0.5);
+    const auto reflectionRayDirection
+        = RayMan::UnitVector3(hit->normal.ToVector3() + GetRandomUnitVector().ToVector3());
+    const auto c = RayColor(RayMan::Ray(hit->point, reflectionRayDirection), world, depth - 1);
+    return RayMan::Interpolate(RayMan::Color::Black(), c, 0.5);
   }
 
   const auto t = 0.5 * (ray.GetDirection().y() + 1);
@@ -58,27 +81,22 @@ static RayMan::Scene GetWorld() {
 
 static RayMan::Color GetPixelColor(const RayMan::Image& image, const RayMan::Scene& world,
                                    const RayMan::Camera& camera, int samples, int row, int col) {
-  // TODO: We should be able to call this from multiple threads
-  // Making these static prevents this
-  static std::uniform_real_distribution<double> distribution(0, 1);
-  static std::mt19937 generator;
-
   double sum_r = 0;
   double sum_g = 0;
   double sum_b = 0;
 
   for (int i = 0; i < samples; ++i) {
-    const auto u = static_cast<double>(col + distribution(generator)) / image.GetWidth();
-    const auto v = 1 - (static_cast<double>(row + distribution(generator)) / image.GetHeight());
+    const auto u = static_cast<double>(col + GetRandomDouble(0, 1)) / image.GetWidth();
+    const auto v = 1 - (static_cast<double>(row + GetRandomDouble(0, 1)) / image.GetHeight());
     const auto ray = camera.GetRay(u, v);
-    const auto color = RayColor(ray, world);
+    const auto color = RayColor(ray, world, MaxReflectionDepth);
 
     sum_r += color.r();
     sum_g += color.g();
     sum_b += color.b();
   }
 
-  const auto scaleComponent = [samples](const double value) { return value / samples; };
+  const auto scaleComponent = [samples](const double value) { return std::sqrt(value / samples); };
 
   return RayMan::Color(scaleComponent(sum_r), scaleComponent(sum_g), scaleComponent(sum_b));
 }
