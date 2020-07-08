@@ -4,6 +4,8 @@
 #include <Scene.hpp>
 #include <limits>
 
+static constexpr double EPS = 1E-5;
+
 namespace RayMan {
   Scene::Scene() = default;
   Scene::Scene(Scene&&) = default;
@@ -16,7 +18,7 @@ namespace RayMan {
     double distanceToClosest = std::numeric_limits<double>::infinity();
 
     for (const auto& object : objects) {
-      if (const auto hit = object->GetHit(ray, 0, distanceToClosest)) {
+      if (const auto hit = object->GetHit(ray, EPS, distanceToClosest)) {
         closestHit = hit;
         distanceToClosest = ((hit->point) - ray.GetOrigin()).length();
       }
