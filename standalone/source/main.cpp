@@ -6,6 +6,8 @@
 #include <Scene.hpp>
 #include <atomic>
 #include <cmath>
+#include <cxxopts.hpp>
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -13,10 +15,6 @@
 #include <thread>
 
 static constexpr int MaxColorValue = 255;
-
-static constexpr int ImageWidth = 96;
-static constexpr int ImageHeight = 54;
-static constexpr int SamplesPerPixel = 5;
 static constexpr int MaxReflectionDepth = 30;
 
 static constexpr double Pi = 3.14159265358979323846;
@@ -142,4 +140,27 @@ static RayMan::Image RenderImage(int width, int height, int samples) {
   return img;
 }
 
-int main() { PrintPPMImage(std::cout, RenderImage(ImageWidth, ImageHeight, SamplesPerPixel)); }
+int main(int argc, char* argv[]) {
+  cxxopts::Options options("RayMan", "RayMan is a very basic raytracer");
+  // clang-format off
+  options.add_options()
+    ("w,width", "Width of the output image", cxxopts::value<int>())
+    ("h,height", "Height of the output image", cxxopts::value<int>())
+    ("s,samples", "Number of samples per pixel", cxxopts::value<int>())
+    ("o,out", "The output file name", cxxopts::value<std::string>())
+    ("help", "Print usage");
+  // clang-format on
+  auto result = options.parse(argc, argv);
+
+  if (result.count("help")) {
+    std::cout << options.help() << std::endl;
+  } else {
+    const auto imageWidth = result["width"].as<int>();
+    const auto imageHeight = result["height"].as<int>();
+    const auto samplesPerPixel = result["samples"].as<int>();
+    const auto outFileName = result["out"].as<std::string>();
+    std::ofstream os(outFileName);
+
+    PrintPPMImage(os, RenderImage(imageWidth, imageHeight, samplesPerPixel));
+  }
+}
