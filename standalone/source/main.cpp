@@ -14,9 +14,9 @@
 
 static constexpr int MaxColorValue = 255;
 
-static constexpr int ImageWidth = 1920;
-static constexpr int ImageHeight = 1080;
-static constexpr int SamplesPerPixel = 100;
+static constexpr int ImageWidth = 96;
+static constexpr int ImageHeight = 54;
+static constexpr int SamplesPerPixel = 5;
 static constexpr int MaxReflectionDepth = 30;
 
 static constexpr double Pi = 3.14159265358979323846;
