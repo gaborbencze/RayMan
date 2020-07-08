@@ -4,11 +4,13 @@
 #include <Image.hpp>
 #include <Ray.hpp>
 #include <Scene.hpp>
+#include <atomic>
 #include <cmath>
 #include <iostream>
 #include <memory>
 #include <optional>
 #include <random>
+#include <thread>
 
 static constexpr int MaxColorValue = 255;
 
@@ -42,7 +44,7 @@ static void PrintPPMImage(std::ostream& os, const RayMan::Image& img) {
 }
 
 static double GetRandomDouble(double min, double max) {
-  static std::mt19937 generator;
+  static thread_local std::mt19937 generator;
   std::uniform_real_distribution<double> distribution(min, max);
   return distribution(generator);
 }
@@ -108,14 +110,33 @@ static void RenderImageColumn(const RayMan::Camera& camera, const RayMan::Scene&
   }
 }
 
+static void RenderImageWorker(const RayMan::Camera& camera, const RayMan::Scene& world,
+                              RayMan::Image& image, int samples, std::atomic<int>& columnCounter) {
+  for (int col = columnCounter++; col < image.GetWidth(); col = columnCounter++) {
+    RenderImageColumn(camera, world, image, samples, col);
+  }
+}
+
 static RayMan::Image RenderImage(int width, int height, int samples) {
   RayMan::Image img(height, width);
   const RayMan::Camera camera;
 
   const RayMan::Scene world = GetWorld();
 
-  for (int col = 0; col < img.GetWidth(); ++col) {
-    RenderImageColumn(camera, world, img, samples, col);
+  std::atomic<int> columnCounter(0);
+  std::vector<std::thread> workers;
+  for (int i = 0; i < std::thread::hardware_concurrency(); ++i) {
+    workers.emplace_back(RenderImageWorker, std::ref(camera), std::ref(world), std::ref(img),
+                         samples, std::ref(columnCounter));
+  }
+
+  while (columnCounter < width) {
+    std::cerr << columnCounter << std::endl;
+    std::this_thread::yield();
+  }
+
+  for (auto& thread : workers) {
+    thread.join();
   }
 
   return img;

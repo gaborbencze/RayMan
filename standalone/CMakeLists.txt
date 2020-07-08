@@ -4,6 +4,8 @@ project(RayManStandalone
   LANGUAGES CXX
 )
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+
 # --- Import tools ----
 
 include(../cmake/tools.cmake)
@@ -26,6 +28,8 @@ CPMAddPackage(
   SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/..
 )
 
+find_package(Threads REQUIRED)
+
 # ---- Create standalone executable ----
 
 file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp)
@@ -37,4 +41,4 @@ set_target_properties(RayManStandalone PROPERTIES
   OUTPUT_NAME "RayMan"
 )
 
-target_link_libraries(RayManStandalone RayMan cxxopts)
+target_link_libraries(RayManStandalone PRIVATE Threads::Threads RayMan cxxopts)
