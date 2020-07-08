@@ -24,6 +24,12 @@ CPMAddPackage(
 )
 
 CPMAddPackage(
+  NAME indicators
+  GITHUB_REPOSITORY p-ranav/indicators
+  VERSION 1.9
+)
+
+CPMAddPackage(
   NAME RayMan
   SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/..
 )
@@ -41,4 +47,4 @@ set_target_properties(RayManStandalone PROPERTIES
   OUTPUT_NAME "RayMan"
 )
 
-target_link_libraries(RayManStandalone PRIVATE Threads::Threads RayMan cxxopts)
+target_link_libraries(RayManStandalone PRIVATE Threads::Threads RayMan cxxopts indicators)

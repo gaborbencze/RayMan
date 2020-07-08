@@ -5,9 +5,12 @@
 #include <Ray.hpp>
 #include <Scene.hpp>
 #include <atomic>
+#include <chrono>
 #include <cmath>
 #include <cxxopts.hpp>
 #include <fstream>
+#include <indicators/block_progress_bar.hpp>
+#include <indicators/cursor_control.hpp>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -128,10 +131,23 @@ static RayMan::Image RenderImage(int width, int height, int samples) {
                          samples, std::ref(columnCounter));
   }
 
+  using namespace indicators;
+  show_console_cursor(false);
+  BlockProgressBar progressBar{option::BarWidth{80},
+                               option::Start{"["},
+                               option::End{"]"},
+                               option::ForegroundColor{Color::white},
+                               option::ShowElapsedTime{true},
+                               option::ShowRemainingTime{true},
+                               option::FontStyles{std::vector<FontStyle>{FontStyle::bold}},
+                               option::MaxProgress{width}};
+
   while (columnCounter < width) {
-    std::cerr << columnCounter << std::endl;
-    std::this_thread::yield();
+    using namespace std::chrono_literals;
+    progressBar.set_progress(columnCounter);
+    std::this_thread::sleep_for(100ms);
   }
+  show_console_cursor(true);
 
   for (auto& thread : workers) {
     thread.join();
