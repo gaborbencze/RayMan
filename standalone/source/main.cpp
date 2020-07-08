@@ -101,17 +101,23 @@ static RayMan::Color GetPixelColor(const RayMan::Image& image, const RayMan::Sce
   return RayMan::Color(scaleComponent(sum_r), scaleComponent(sum_g), scaleComponent(sum_b));
 }
 
+static void RenderImageColumn(const RayMan::Camera& camera, const RayMan::Scene& world,
+                              RayMan::Image& image, int samples, int col) {
+  for (int row = 0; row < image.GetHeight(); ++row) {
+    image.Set(row, col, GetPixelColor(image, world, camera, samples, row, col));
+  }
+}
+
 static RayMan::Image RenderImage(int width, int height, int samples) {
   RayMan::Image img(height, width);
   const RayMan::Camera camera;
 
   const RayMan::Scene world = GetWorld();
 
-  for (int row = 0; row < img.GetHeight(); ++row) {
-    for (int col = 0; col < img.GetWidth(); ++col) {
-      img.Set(row, col, GetPixelColor(img, world, camera, samples, row, col));
-    }
+  for (int col = 0; col < img.GetWidth(); ++col) {
+    RenderImageColumn(camera, world, img, samples, col);
   }
+
   return img;
 }
 
