@@ -55,11 +55,15 @@ namespace RayMan {
     return result;
   }
 
+  constexpr Vector3 operator-(const Vector3& u, const Vector3& v) noexcept { return u + (-v); }
+
   constexpr Vector3 operator*(const Vector3& v, const double t) noexcept {
     Vector3 result = v;
     result *= t;
     return result;
   }
+
+  constexpr Vector3 operator*(const double t, const Vector3& v) noexcept { return v * t; }
 
   constexpr Vector3 operator/(const Vector3& v, const double t) {
     Vector3 result = v;
