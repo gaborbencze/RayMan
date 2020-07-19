@@ -12,6 +12,9 @@ namespace RayMan {
     }
   }
 
-  Hit::Hit(const Point3& point, const UnitVector3& outwardNormal, const Ray& ray)
-      : point(point), normal(GetFaceNormal(outwardNormal, ray.GetDirection())) {}
+  Hit::Hit(const Point3& point, const UnitVector3& outwardNormal, const Ray& ray,
+           const Material* material)
+      : point(point),
+        normal(GetFaceNormal(outwardNormal, ray.GetDirection())),
+        material(material) {}
 }  // namespace RayMan

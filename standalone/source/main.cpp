@@ -16,6 +16,7 @@
 #include <optional>
 #include <thread>
 
+#include "Material/Lambertian.hpp"
 #include "RandomUtils.hpp"
 
 static constexpr int MaxColorValue = 255;
@@ -49,10 +50,10 @@ static RayMan::Color RayColor(const RayMan::Ray& ray, const RayMan::Scene& world
   }
 
   if (const auto hit = world.GetHit(ray)) {
-    const auto reflectionRayDirection
-        = RayMan::UnitVector3(hit->normal.ToVector3() + RayMan::GetRandomUnitVector().ToVector3());
-    const auto c = RayColor(RayMan::Ray(hit->point, reflectionRayDirection), world, depth - 1);
-    return RayMan::Interpolate(RayMan::Color::Black(), c, 0.5);
+    if (auto scatter = hit->material->Scatter(ray, *hit)) {
+      const auto [attenuation, scatteredRay] = *scatter;
+      return attenuation * RayColor(scatteredRay, world, depth - 1);
+    }
   }
 
   const auto t = 0.5 * (ray.GetDirection().y() + 1);
@@ -62,8 +63,11 @@ static RayMan::Color RayColor(const RayMan::Ray& ray, const RayMan::Scene& world
 static RayMan::Scene GetWorld() {
   RayMan::Scene world;
 
-  world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{0, 0, -1}, 0.5));
-  world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{0, -100.5, 0}, 100));
+  auto groundMaterial = std::make_shared<RayMan::Lambertian>(RayMan::Color(0.8, 0.8, 0));
+  auto centerMaterial = std::make_shared<RayMan::Lambertian>(RayMan::Color(0.7, 0.3, 0.3));
+
+  world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{0, -100.5, 0}, 100, groundMaterial));
+  world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{0, 0, -1}, 0.5, centerMaterial));
 
   return world;
 }

@@ -4,7 +4,8 @@
 #include <cmath>
 
 namespace RayMan {
-  Sphere::Sphere(const Point3& center, double radius) : center(center), radius(radius) {}
+  Sphere::Sphere(const Point3& center, double radius, std::shared_ptr<const Material> material)
+      : center(center), radius(radius), material(std::move(material)) {}
 
   std::optional<Hit> Sphere::GetHitImpl(const Ray& ray, double distMin, double distMax) const {
     using RayMan::Dot;
@@ -22,7 +23,7 @@ namespace RayMan {
     const auto CalcHit = [this, &ray](const double distance) {
       const Point3 point = ray.At(distance);
       const UnitVector3 normal = UnitVector3(point - this->center);
-      return Hit(point, normal, ray);
+      return Hit(point, normal, ray, material.get());
     };
 
     if (double t = (-halfB - root); distMin < t && t < distMax) {
