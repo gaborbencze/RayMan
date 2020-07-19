@@ -1,5 +1,6 @@
-#include <Hit.hpp>
-#include <Ray.hpp>
+#include "Hit.hpp"
+
+#include "Ray.hpp"
 
 namespace RayMan {
 

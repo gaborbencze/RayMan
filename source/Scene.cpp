@@ -1,8 +1,10 @@
-#include <Hit.hpp>
-#include <Hittable/Hittable.hpp>
-#include <Ray.hpp>
-#include <Scene.hpp>
+#include "Scene.hpp"
+
 #include <limits>
+
+#include "Hit.hpp"
+#include "Hittable/Hittable.hpp"
+#include "Ray.hpp"
 
 static constexpr double EPS = 1E-5;
 

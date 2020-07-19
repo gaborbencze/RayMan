@@ -1,6 +1,8 @@
-#include <Hit.hpp>
-#include <Hittable/Hittable.hpp>
+#include "Hittable/Hittable.hpp"
+
 #include <limits>
+
+#include "Hit.hpp"
 
 namespace RayMan {
   std::optional<Hit> Hittable::GetHit(const Ray& ray) const {

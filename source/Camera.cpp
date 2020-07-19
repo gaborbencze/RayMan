@@ -1,9 +1,10 @@
-#include <Camera.hpp>
-#include <Ray.hpp>
+#include "Camera.hpp"
+
 #include <cassert>
 #include <cmath>
 
 #include "MathUtils.hpp"
+#include "Ray.hpp"
 
 namespace RayMan {
 

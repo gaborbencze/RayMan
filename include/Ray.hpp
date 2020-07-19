@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Point3.hpp>
-#include <UnitVector3.hpp>
+#include "Point3.hpp"
+#include "UnitVector3.hpp"
 
 namespace RayMan {
   class Ray {

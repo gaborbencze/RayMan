@@ -1,9 +1,3 @@
-#include <Camera.hpp>
-#include <Hit.hpp>
-#include <Hittable/Sphere.hpp>
-#include <Image.hpp>
-#include <Ray.hpp>
-#include <Scene.hpp>
 #include <atomic>
 #include <chrono>
 #include <cmath>
@@ -16,9 +10,15 @@
 #include <optional>
 #include <thread>
 
+#include "Camera.hpp"
+#include "Hit.hpp"
+#include "Hittable/Sphere.hpp"
+#include "Image.hpp"
 #include "Material/Lambertian.hpp"
 #include "Material/Metal.hpp"
 #include "RandomUtils.hpp"
+#include "Ray.hpp"
+#include "Scene.hpp"
 
 static constexpr int MaxColorValue = 255;
 static constexpr int MaxReflectionDepth = 30;

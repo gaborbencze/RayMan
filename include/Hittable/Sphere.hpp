@@ -1,8 +1,9 @@
 #pragma once
 
-#include <Hittable/Hittable.hpp>
-#include <Point3.hpp>
 #include <memory>
+
+#include "Hittable/Hittable.hpp"
+#include "Point3.hpp"
 
 namespace RayMan {
   class Material;

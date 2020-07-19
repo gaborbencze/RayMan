@@ -1,7 +1,8 @@
 #pragma once
 
-#include <Color.hpp>
 #include <vector>
+
+#include "Color.hpp"
 
 namespace RayMan {
   class Image {

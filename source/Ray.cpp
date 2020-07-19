@@ -1,4 +1,4 @@
-#include <Ray.hpp>
+#include "Ray.hpp"
 
 namespace RayMan {
   Ray::Ray(const Point3& origin, const UnitVector3& direction)

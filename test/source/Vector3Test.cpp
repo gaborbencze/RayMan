@@ -1,8 +1,9 @@
 #include <doctest/doctest.h>
 
-#include <TestUtils.hpp>
-#include <Vector3.hpp>
 #include <array>
+
+#include "TestUtils.hpp"
+#include "Vector3.hpp"
 
 using namespace RayMan;
 

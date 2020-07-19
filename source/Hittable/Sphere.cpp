@@ -1,7 +1,9 @@
-#include <Hit.hpp>
-#include <Hittable/Sphere.hpp>
-#include <Ray.hpp>
+#include "Hittable/Sphere.hpp"
+
 #include <cmath>
+
+#include "Hit.hpp"
+#include "Ray.hpp"
 
 namespace RayMan {
   Sphere::Sphere(const Point3& center, double radius, std::shared_ptr<const Material> material)

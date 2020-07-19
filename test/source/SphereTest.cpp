@@ -1,10 +1,10 @@
 #include <doctest/doctest.h>
 
-#include <Hit.hpp>
-#include <Hittable/Sphere.hpp>
-#include <Material/Lambertian.hpp>
-#include <Ray.hpp>
-#include <TestUtils.hpp>
+#include "Hit.hpp"
+#include "Hittable/Sphere.hpp"
+#include "Material/Lambertian.hpp"
+#include "Ray.hpp"
+#include "TestUtils.hpp"
 
 using namespace RayMan;
 

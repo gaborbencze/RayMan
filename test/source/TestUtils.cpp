@@ -1,9 +1,10 @@
+#include "TestUtils.hpp"
+
 #include <doctest/doctest.h>
 
-#include <Point3.hpp>
-#include <TestUtils.hpp>
-#include <UnitVector3.hpp>
-#include <Vector3.hpp>
+#include "Point3.hpp"
+#include "UnitVector3.hpp"
+#include "Vector3.hpp"
 
 namespace RayMan {
 
