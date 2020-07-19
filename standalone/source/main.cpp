@@ -51,7 +51,7 @@ static RayMan::Color RayColor(const RayMan::Ray& ray, const RayMan::Scene& world
   }
 
   if (const auto hit = world.GetHit(ray)) {
-    if (auto scatter = hit->material->Scatter(ray, *hit)) {
+    if (const auto scatter = hit->material->Scatter(ray, *hit)) {
       const auto [attenuation, scatteredRay] = *scatter;
       return attenuation * RayColor(scatteredRay, world, depth - 1);
     } else {
@@ -66,10 +66,10 @@ static RayMan::Color RayColor(const RayMan::Ray& ray, const RayMan::Scene& world
 static RayMan::Scene GetWorld() {
   RayMan::Scene world;
 
-  auto groundMaterial = std::make_shared<RayMan::Lambertian>(RayMan::Color(0.8, 0.8, 0));
-  auto centerMaterial = std::make_shared<RayMan::Lambertian>(RayMan::Color(0.7, 0.3, 0.3));
-  auto leftMaterial = std::make_shared<RayMan::Metal>(RayMan::Color(0.8, 0.8, 0.8), 0.02);
-  auto rightMaterial = std::make_shared<RayMan::Metal>(RayMan::Color(0.8, 0.6, 0.2), 0.8);
+  const auto groundMaterial = std::make_shared<RayMan::Lambertian>(RayMan::Color(0.8, 0.8, 0));
+  const auto centerMaterial = std::make_shared<RayMan::Lambertian>(RayMan::Color(0.7, 0.3, 0.3));
+  const auto leftMaterial = std::make_shared<RayMan::Metal>(RayMan::Color(0.8, 0.8, 0.8), 0.02);
+  const auto rightMaterial = std::make_shared<RayMan::Metal>(RayMan::Color(0.8, 0.6, 0.2), 0.8);
 
   world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{0, -100.5, 0}, 100, groundMaterial));
   world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{0, 0, -1}, 0.5, centerMaterial));
