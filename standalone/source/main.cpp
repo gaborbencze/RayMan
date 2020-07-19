@@ -17,6 +17,7 @@
 #include <thread>
 
 #include "Material/Lambertian.hpp"
+#include "Material/Metal.hpp"
 #include "RandomUtils.hpp"
 
 static constexpr int MaxColorValue = 255;
@@ -65,9 +66,13 @@ static RayMan::Scene GetWorld() {
 
   auto groundMaterial = std::make_shared<RayMan::Lambertian>(RayMan::Color(0.8, 0.8, 0));
   auto centerMaterial = std::make_shared<RayMan::Lambertian>(RayMan::Color(0.7, 0.3, 0.3));
+  auto leftMaterial = std::make_shared<RayMan::Metal>(RayMan::Color(0.8, 0.8, 0.8));
+  auto rightMaterial = std::make_shared<RayMan::Metal>(RayMan::Color(0.8, 0.6, 0.2));
 
   world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{0, -100.5, 0}, 100, groundMaterial));
   world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{0, 0, -1}, 0.5, centerMaterial));
+  world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{-1, 0, -1}, 0.5, leftMaterial));
+  world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{1, 0, -1}, 0.5, rightMaterial));
 
   return world;
 }
