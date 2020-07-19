@@ -21,7 +21,7 @@ jobs:
     - uses: actions/checkout@v1
     
     - name: configure
-      run: cmake -Htest -Bbuild -DENABLE_TEST_COVERAGE=1
+      run: cmake -Htest -Bbuild -DENABLE_TEST_COVERAGE=1 -DUSE_SANITIZER='Address;Undefined'
 
     - name: build
       run: cmake --build build --config Debug -j4
