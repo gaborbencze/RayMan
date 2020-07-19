@@ -118,7 +118,7 @@ static void RenderImageWorker(const RayMan::Camera& camera, const RayMan::Scene&
 
 static RayMan::Image RenderImage(int width, int height, int samples) {
   RayMan::Image img(height, width);
-  const RayMan::Camera camera;
+  const auto camera = RayMan::Camera::Create(90, static_cast<double>(width) / height);
 
   const RayMan::Scene world = GetWorld();
 
