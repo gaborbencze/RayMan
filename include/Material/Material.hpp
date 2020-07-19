@@ -12,6 +12,6 @@ namespace RayMan {
   public:
     virtual ~Material();
 
-    virtual std::optional<std::pair<Color, Ray>> Scatter(const Ray& ray, const Hit& hit);
+    virtual std::optional<std::pair<Color, Ray>> Scatter(const Ray& ray, const Hit& hit) const = 0;
   };
 }  // namespace RayMan

@@ -9,7 +9,8 @@ namespace RayMan {
 
   Lambertian::Lambertian(const Color& albedo) : albedo(albedo) {}
 
-  std::optional<std::pair<Color, Ray>> Lambertian::Scatter(const Ray& /*ray*/, const Hit& hit) {
+  std::optional<std::pair<Color, Ray>> Lambertian::Scatter(const Ray& /*ray*/,
+                                                           const Hit& hit) const {
     const auto reflectionRayDirection
         = RayMan::UnitVector3(hit.normal.ToVector3() + RayMan::GetRandomUnitVector().ToVector3());
 

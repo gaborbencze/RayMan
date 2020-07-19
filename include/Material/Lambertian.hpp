@@ -8,7 +8,7 @@ namespace RayMan {
   public:
     Lambertian(const Color& albedo);
 
-    std::optional<std::pair<Color, Ray>> Scatter(const Ray& ray, const Hit& hit) override;
+    std::optional<std::pair<Color, Ray>> Scatter(const Ray& ray, const Hit& hit) const override;
 
   private:
     Color albedo;
