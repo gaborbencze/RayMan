@@ -116,9 +116,9 @@ static void RenderImageWorker(const RayMan::Camera& camera, const RayMan::Scene&
   }
 }
 
-static RayMan::Image RenderImage(int width, int height, int samples) {
+static RayMan::Image RenderImage(int width, int height, double fov, int samples) {
   RayMan::Image img(height, width);
-  const auto camera = RayMan::Camera::Create(90, static_cast<double>(width) / height);
+  const auto camera = RayMan::Camera::Create(fov, static_cast<double>(width) / height);
 
   const RayMan::Scene world = GetWorld();
 
@@ -161,6 +161,7 @@ int main(int argc, char* argv[]) {
     ("w,width", "Width of the output image", cxxopts::value<int>())
     ("h,height", "Height of the output image", cxxopts::value<int>())
     ("s,samples", "Number of samples per pixel", cxxopts::value<int>())
+    ("f,fov", "Vertial field-of-view (degrees)", cxxopts::value<double>())
     ("o,out", "The output file name", cxxopts::value<std::string>())
     ("help", "Print usage");
   // clang-format on
@@ -171,10 +172,11 @@ int main(int argc, char* argv[]) {
   } else {
     const auto imageWidth = result["width"].as<int>();
     const auto imageHeight = result["height"].as<int>();
+    const auto fov = result["fov"].as<double>();
     const auto samplesPerPixel = result["samples"].as<int>();
     const auto outFileName = result["out"].as<std::string>();
     std::ofstream os(outFileName);
 
-    PrintPPMImage(os, RenderImage(imageWidth, imageHeight, samplesPerPixel));
+    PrintPPMImage(os, RenderImage(imageWidth, imageHeight, fov, samplesPerPixel));
   }
 }

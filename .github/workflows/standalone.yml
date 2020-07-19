@@ -23,4 +23,4 @@ jobs:
       run: cmake --build build -j4
 
     - name: run
-      run: ./build/RayMan -w 192 -h 108 -s 3 -o out.ppm
+      run: ./build/RayMan -w 192 -h 108 -f 60 -s 3 -o out.ppm
