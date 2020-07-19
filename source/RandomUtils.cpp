@@ -2,9 +2,8 @@
 
 #include <random>
 
+#include "MathUtils.hpp"
 #include "UnitVector3.hpp"
-
-static constexpr double Pi = 3.14159265358979323846;
 
 namespace RayMan {
 
