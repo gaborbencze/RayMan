@@ -126,7 +126,7 @@ static RayMan::Image RenderImage(int width, int height, int samples) {
 
   std::atomic<int> columnCounter(0);
   std::vector<std::thread> workers;
-  for (int i = 0; i < std::thread::hardware_concurrency(); ++i) {
+  for (auto i = 0u; i < std::thread::hardware_concurrency(); ++i) {
     workers.emplace_back(RenderImageWorker, std::ref(camera), std::ref(world), std::ref(img),
                          samples, std::ref(columnCounter));
   }

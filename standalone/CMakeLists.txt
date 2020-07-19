@@ -47,4 +47,11 @@ set_target_properties(RayManStandalone PROPERTIES
   OUTPUT_NAME "RayMan"
 )
 
+# set warning levels
+if(MSVC)
+  target_compile_options(RayManStandalone PRIVATE /W4 /WX)
+else()
+  target_compile_options(RayManStandalone PRIVATE -Wall -Wextra -pedantic -Werror)
+endif()
+
 target_link_libraries(RayManStandalone PRIVATE Threads::Threads RayMan cxxopts indicators)

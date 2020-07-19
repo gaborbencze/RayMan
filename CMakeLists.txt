@@ -46,6 +46,13 @@ set_target_properties(RayMan PROPERTIES CXX_STANDARD 17)
 # being a cross-platform target, we enforce standards conformance on MSVC
 target_compile_options(RayMan PUBLIC "$<$<BOOL:${MSVC}>:/permissive->")
 
+# set warning levels
+if(MSVC)
+  target_compile_options(RayMan PRIVATE /W4 /WX)
+else()
+  target_compile_options(RayMan PRIVATE -Wall -Wextra -pedantic -Werror)
+endif()
+
 # Link dependencies (if required)
 # target_link_libraries(RayMan PUBLIC cxxopts)
 
