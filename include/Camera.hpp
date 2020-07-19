@@ -9,7 +9,8 @@ namespace RayMan {
 
   class Camera {
   public:
-    static Camera Create(double verticalFOV, double aspectRatio);
+    static Camera Create(Point3 cameraPosition, Point3 lookAt, double verticalFOV,
+                         double aspectRatio);
 
     Ray GetRay(double u, double v) const;
 

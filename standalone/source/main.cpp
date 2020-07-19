@@ -71,10 +71,10 @@ static RayMan::Scene GetWorld() {
   const auto leftMaterial = std::make_shared<RayMan::Metal>(RayMan::Color(0.8, 0.8, 0.8), 0.02);
   const auto rightMaterial = std::make_shared<RayMan::Metal>(RayMan::Color(0.8, 0.6, 0.2), 0.8);
 
-  world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{0, -100.5, 0}, 100, groundMaterial));
-  world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{0, 0, -1}, 0.5, centerMaterial));
-  world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{-1, 0, -1}, 0.5, leftMaterial));
-  world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{1, 0, -1}, 0.5, rightMaterial));
+  world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{0, -1000.5, 0}, 1000, groundMaterial));
+  world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{0, 0, 0}, 0.5, centerMaterial));
+  world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{-1, 0, 0}, 0.5, leftMaterial));
+  world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{1, 0, 0}, 0.5, rightMaterial));
 
   return world;
 }
@@ -118,7 +118,8 @@ static void RenderImageWorker(const RayMan::Camera& camera, const RayMan::Scene&
 
 static RayMan::Image RenderImage(int width, int height, double fov, int samples) {
   RayMan::Image img(height, width);
-  const auto camera = RayMan::Camera::Create(fov, static_cast<double>(width) / height);
+  const auto camera
+      = RayMan::Camera::Create({2, -0.3, 3}, {0, 0, 0}, fov, static_cast<double>(width) / height);
 
   const RayMan::Scene world = GetWorld();
 

@@ -7,10 +7,10 @@
 
 namespace RayMan {
 
-  static constexpr double FocalLength = 1;
-
-  Camera Camera::Create(double verticalFOV, double aspectRatio) {
+  Camera Camera::Create(Point3 cameraPosition, Point3 lookAt, double verticalFOV,
+                        double aspectRatio) {
     assert(verticalFOV > 0);
+    assert(verticalFOV < 180);
     assert(aspectRatio > 0);
 
     const auto theta = DegreesToRadians(verticalFOV);
@@ -18,13 +18,17 @@ namespace RayMan {
     const auto viewportHeight = 2 * h;
     const auto viewportWidth = aspectRatio * viewportHeight;
 
-    const Point3 origin{0, 0, 0};
-    const Vector3 horizontal{viewportWidth, 0, 0};
-    const Vector3 vertical{0, viewportHeight, 0};
-    const Point3 lowerLeftCorner
-        = origin - horizontal / 2 - vertical / 2 - Vector3(0, 0, FocalLength);
+    const UnitVector3 up{0, 1, 0};
 
-    return Camera{origin, horizontal, vertical, lowerLeftCorner};
+    const auto w = UnitVector3(cameraPosition - lookAt);
+    const auto u = UnitVector3(Cross(up, w));
+    const auto v = Cross(w, u);
+
+    const Vector3 horizontal = u * viewportWidth;
+    const Vector3 vertical = v * viewportHeight;
+    const Point3 lowerLeftCorner = cameraPosition - horizontal / 2 - vertical / 2 - w.ToVector3();
+
+    return Camera{cameraPosition, horizontal, vertical, lowerLeftCorner};
   }
 
   Ray Camera::GetRay(double u, double v) const {
@@ -32,6 +36,7 @@ namespace RayMan {
     const UnitVector3 direction(lowerLeftCorner + horizontal * u + vertical * v - origin);
     return Ray(origin, direction);
   }
+
   Camera::Camera(Point3 origin, Vector3 horizontal, Vector3 vertical, Point3 lowerLeftCorner)
       : origin(origin),
         horizontal(horizontal),
