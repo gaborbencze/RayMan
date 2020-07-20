@@ -20,7 +20,7 @@ namespace RayMan {
 
   std::optional<std::pair<Color, Ray>> Metal::Scatter(const Ray& ray, const Hit& hit) const {
     const auto reflected = UnitVector3(Reflect(ray.GetDirection(), hit.normal).ToVector3()
-                                       + GetRandomUnitVector() * fuzziness);
+                                       + GetRandomVectorInUnitSphere() * fuzziness);
     if (Dot(reflected, hit.normal) > 0) {
       return std::make_pair(albedo, Ray(hit.point, reflected));
     }

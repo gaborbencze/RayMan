@@ -4,6 +4,7 @@
 
 #include "MathUtils.hpp"
 #include "UnitVector3.hpp"
+#include "Vector3.hpp"
 
 namespace RayMan {
 
@@ -18,5 +19,24 @@ namespace RayMan {
     const auto z = GetRandomDouble(-1, 1);
     const auto r = std::sqrt(1 - z * z);
     return UnitVector3(r * std::cos(a), r * std::sin(a), z);
+  }
+
+  Vector3 GetRandomVectorInUnitSphere() {
+    while (true) {
+      const auto v
+          = Vector3(GetRandomDouble(-1, 1), GetRandomDouble(-1, 1), GetRandomDouble(-1, 1));
+      if (v.length_square() <= 1) {
+        return v;
+      }
+    }
+  }
+
+  Vector3 GetRandomVectorInUnitDisk() {
+    while (true) {
+      const auto v = Vector3(GetRandomDouble(-1, 1), GetRandomDouble(-1, 1), 0);
+      if (v.length_square() <= 1) {
+        return v;
+      }
+    }
   }
 }  // namespace RayMan
