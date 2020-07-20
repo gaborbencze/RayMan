@@ -67,9 +67,9 @@ static RayMan::Scene GetWorld() {
   RayMan::Scene world;
 
   const auto groundMaterial = std::make_shared<RayMan::Lambertian>(RayMan::Color(0.8, 0.8, 0));
-  const auto centerMaterial = std::make_shared<RayMan::Lambertian>(RayMan::Color(0.7, 0.3, 0.3));
+  const auto centerMaterial = std::make_shared<RayMan::Lambertian>(RayMan::Color(0.2, 0.2, 1));
   const auto leftMaterial = std::make_shared<RayMan::Metal>(RayMan::Color(0.8, 0.8, 0.8), 0.02);
-  const auto rightMaterial = std::make_shared<RayMan::Metal>(RayMan::Color(0.8, 0.6, 0.2), 0.8);
+  const auto rightMaterial = std::make_shared<RayMan::Metal>(RayMan::Color(0.1, 1, 0.5), 0.8);
 
   world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{0, -1000.5, 0}, 1000, groundMaterial));
   world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{0, 0, 0}, 0.5, centerMaterial));
@@ -118,8 +118,11 @@ static void RenderImageWorker(const RayMan::Camera& camera, const RayMan::Scene&
 
 static RayMan::Image RenderImage(int width, int height, double fov, int samples) {
   RayMan::Image img(height, width);
-  const auto camera
-      = RayMan::Camera::Create({2, -0.3, 3}, {0, 0, 0}, fov, static_cast<double>(width) / height);
+  const RayMan::Point3 cameraPosition{2, -0.3, 3};
+  const RayMan::Point3 cameraTarget{0, 0, 0};
+  const auto camera = RayMan::Camera::Create(cameraPosition, cameraTarget, fov,
+                                             static_cast<double>(width) / height, 0.15,
+                                             (cameraTarget - cameraPosition).length());
 
   const RayMan::Scene world = GetWorld();
 
