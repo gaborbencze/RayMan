@@ -1,0 +1,15 @@
+---
+Checks: '*,
+         -fuchsia-*,
+         -google-*,
+         -zircon-*,
+         -abseil-*,
+         -modernize-use-trailing-return-type,
+         -llvm-*,
+         -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+         -hicpp-no-array-decay'
+# cppcoreguidelines-pro-bounds-array-to-pointer-decay and hicpp-no-array-decay disabled due to issues with the assert macro
+
+WarningsAsErrors: '*'
+HeaderFilterRegex: ''
+FormatStyle:     none
