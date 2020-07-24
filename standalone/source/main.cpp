@@ -23,10 +23,12 @@
 static constexpr int MaxColorValue = 255;
 static constexpr int MaxReflectionDepth = 30;
 
+static constexpr int ProgressBarWidth = 80;
+
 static void PrintColor(std::ostream& os, const RayMan::Color& c) {
-  const int r = c.r() * MaxColorValue;
-  const int g = c.g() * MaxColorValue;
-  const int b = c.b() * MaxColorValue;
+  const int r = static_cast<int>(c.r() * MaxColorValue);
+  const int g = static_cast<int>(c.g() * MaxColorValue);
+  const int b = static_cast<int>(c.b() * MaxColorValue);
 
   os << r << ' ' << g << ' ' << b << ' ';
 }
@@ -54,26 +56,37 @@ static RayMan::Color RayColor(const RayMan::Ray& ray, const RayMan::Scene& world
     if (const auto scatter = hit->material->Scatter(ray, *hit)) {
       const auto [attenuation, scatteredRay] = *scatter;
       return attenuation * RayColor(scatteredRay, world, depth - 1);
-    } else {
-      return RayMan::Color::Black();
     }
+    return RayMan::Color::Black();
   }
 
   const auto t = 0.5 * (ray.GetDirection().y() + 1);
-  return RayMan::Interpolate(RayMan::Color(0.5, 0.7, 1), RayMan::Color(1, 1, 1), t);
+
+  const auto skyBottomColor = RayMan::Color(0.5, 0.7, 1);
+  const auto skyTopColor = RayMan::Color(0.5, 0.7, 1);
+
+  return RayMan::Interpolate(skyBottomColor, skyTopColor, t);
 }
 
 static RayMan::Scene GetWorld() {
   RayMan::Scene world;
 
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
   const auto groundMaterial = std::make_shared<RayMan::Lambertian>(RayMan::Color(0.8, 0.8, 0));
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
   const auto centerMaterial = std::make_shared<RayMan::Lambertian>(RayMan::Color(0.2, 0.2, 1));
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
   const auto leftMaterial = std::make_shared<RayMan::Metal>(RayMan::Color(0.8, 0.8, 0.8), 0.02);
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
   const auto rightMaterial = std::make_shared<RayMan::Metal>(RayMan::Color(0.1, 1, 0.5), 0.8);
 
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
   world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{0, -1000.5, 0}, 1000, groundMaterial));
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
   world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{0, 0, 0}, 0.5, centerMaterial));
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
   world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{-1, 0, 0}, 0.5, leftMaterial));
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
   world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{1, 0, 0}, 0.5, rightMaterial));
 
   return world;
@@ -127,15 +140,15 @@ static RayMan::Image RenderImage(int width, int height, double fov, int samples)
   const RayMan::Scene world = GetWorld();
 
   std::atomic<int> columnCounter(0);
-  std::vector<std::thread> workers;
-  for (auto i = 0u; i < std::thread::hardware_concurrency(); ++i) {
-    workers.emplace_back(RenderImageWorker, std::ref(camera), std::ref(world), std::ref(img),
+  std::vector<std::thread> workers(std::thread::hardware_concurrency());
+  for (auto& worker : workers) {
+    worker = std::thread(RenderImageWorker, std::ref(camera), std::ref(world), std::ref(img),
                          samples, std::ref(columnCounter));
   }
 
   using namespace indicators;
   show_console_cursor(false);
-  BlockProgressBar progressBar{option::BarWidth{80},
+  BlockProgressBar progressBar{option::BarWidth{ProgressBarWidth},
                                option::Start{"["},
                                option::End{"]"},
                                option::ForegroundColor{Color::white},
@@ -159,28 +172,33 @@ static RayMan::Image RenderImage(int width, int height, double fov, int samples)
 }
 
 int main(int argc, char* argv[]) {
-  cxxopts::Options options("RayMan", "RayMan is a very basic raytracer");
-  // clang-format off
-  options.add_options()
-    ("w,width", "Width of the output image", cxxopts::value<int>())
-    ("h,height", "Height of the output image", cxxopts::value<int>())
-    ("s,samples", "Number of samples per pixel", cxxopts::value<int>())
-    ("f,fov", "Vertial field-of-view (degrees)", cxxopts::value<double>())
-    ("o,out", "The output file name", cxxopts::value<std::string>())
-    ("help", "Print usage");
-  // clang-format on
-  auto result = options.parse(argc, argv);
+  try {
+    cxxopts::Options options("RayMan", "RayMan is a very basic raytracer");
+    // clang-format off
+    options.add_options()
+      ("w,width", "Width of the output image", cxxopts::value<int>())
+      ("h,height", "Height of the output image", cxxopts::value<int>())
+      ("s,samples", "Number of samples per pixel", cxxopts::value<int>())
+      ("f,fov", "Vertial field-of-view (degrees)", cxxopts::value<double>())
+      ("o,out", "The output file name", cxxopts::value<std::string>())
+      ("help", "Print usage");
+    // clang-format on
 
-  if (result.count("help")) {
-    std::cout << options.help() << std::endl;
-  } else {
-    const auto imageWidth = result["width"].as<int>();
-    const auto imageHeight = result["height"].as<int>();
-    const auto fov = result["fov"].as<double>();
-    const auto samplesPerPixel = result["samples"].as<int>();
-    const auto outFileName = result["out"].as<std::string>();
-    std::ofstream os(outFileName);
+    auto result = options.parse(argc, argv);
 
-    PrintPPMImage(os, RenderImage(imageWidth, imageHeight, fov, samplesPerPixel));
+    if (result.count("help") > 0U) {
+      std::cout << options.help() << std::endl;
+    } else {
+      const auto imageWidth = result["width"].as<int>();
+      const auto imageHeight = result["height"].as<int>();
+      const auto fov = result["fov"].as<double>();
+      const auto samplesPerPixel = result["samples"].as<int>();
+      const auto outFileName = result["out"].as<std::string>();
+      std::ofstream os(outFileName);
+
+      PrintPPMImage(os, RenderImage(imageWidth, imageHeight, fov, samplesPerPixel));
+    }
+  } catch (...) {
+    std::cerr << "An unexpected error occurred..." << std::endl;
   }
 }

@@ -12,7 +12,7 @@ namespace RayMan {
   class Scene {
   public:
     Scene();
-    Scene(Scene&&);
+    Scene(Scene&&) noexcept;
     ~Scene();
 
     void Add(std::unique_ptr<Hittable> object);

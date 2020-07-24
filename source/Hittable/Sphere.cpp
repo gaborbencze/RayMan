@@ -30,7 +30,8 @@ namespace RayMan {
 
     if (double t = (-halfB - root); distMin < t && t < distMax) {
       return CalcHit(t);
-    } else if (double t2 = (-halfB + root); distMin < t2 && t2 < distMax) {
+    }
+    if (double t2 = (-halfB + root); distMin < t2 && t2 < distMax) {
       return CalcHit(t2);
     }
     return std::nullopt;

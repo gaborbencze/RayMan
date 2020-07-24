@@ -8,9 +8,8 @@ namespace RayMan {
                                    const UnitVector3& rayDirection) {
     if (Dot(outwardNormal, rayDirection) < 0) {
       return outwardNormal;
-    } else {
-      return -outwardNormal;
     }
+    return -outwardNormal;
   }
 
   Hit::Hit(const Point3& point, const UnitVector3& outwardNormal, const Ray& ray,

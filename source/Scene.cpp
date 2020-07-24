@@ -10,7 +10,7 @@ static constexpr double EPS = 1E-5;
 
 namespace RayMan {
   Scene::Scene() = default;
-  Scene::Scene(Scene&&) = default;
+  Scene::Scene(Scene&&) noexcept = default;
   Scene::~Scene() = default;
 
   void Scene::Add(std::unique_ptr<Hittable> object) { objects.push_back(std::move(object)); }

@@ -13,7 +13,7 @@ namespace RayMan {
     static Camera Create(Point3 cameraPosition, Point3 lookAt, double verticalFOV,
                          double aspectRatio, double aperture, double focusDistance);
 
-    Ray GetRay(double u, double v) const;
+    Ray GetRay(double s, double t) const;
 
   private:
     Camera(const Point3& origin, const Vector3& horizontal, const Vector3& vertical,

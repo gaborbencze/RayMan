@@ -9,7 +9,7 @@
 namespace RayMan {
 
   double GetRandomDouble(double min, double max) {
-    static thread_local std::mt19937 generator;
+    static thread_local std::mt19937 generator;  // NOLINT
     std::uniform_real_distribution<double> distribution(min, max);
     return distribution(generator);
   }
