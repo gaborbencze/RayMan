@@ -158,9 +158,11 @@ static RayMan::Image RenderImage(int width, int height, double fov, int samples)
                                option::MaxProgress{width}};
 
   while (columnCounter < width) {
-    using namespace std::chrono_literals;
     progressBar.set_progress(columnCounter);
-    std::this_thread::sleep_for(100ms);
+
+    using namespace std::chrono_literals;
+    const auto updateDeltaTime = 100ms;
+    std::this_thread::sleep_for(updateDeltaTime);
   }
   show_console_cursor(true);
 
