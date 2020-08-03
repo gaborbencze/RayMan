@@ -24,5 +24,11 @@ namespace RayMan {
   double Dot(const UnitVector3& u, const UnitVector3& v);
   Vector3 Cross(const UnitVector3& u, const UnitVector3& v);
 
+  UnitVector3 Reflect(const UnitVector3& v, const UnitVector3& normal);
+
+  Vector3 operator+(const Vector3& lhs, const UnitVector3& rhs);
+  Vector3 operator+(const UnitVector3& lhs, const Vector3& rhs);
+  Vector3 operator+(const UnitVector3& lhs, const UnitVector3& rhs);
+
   std::ostream& operator<<(std::ostream& os, const UnitVector3& v);
 }  // namespace RayMan

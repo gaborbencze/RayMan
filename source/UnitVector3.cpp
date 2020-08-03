@@ -20,6 +20,18 @@ namespace RayMan {
     return Cross(u.ToVector3(), v.ToVector3());
   }
 
+  UnitVector3 Reflect(const UnitVector3& v, const UnitVector3& normal) {
+    return UnitVector3{v.ToVector3() - 2 * Dot(v, normal) * normal.ToVector3()};
+  }
+
+  Vector3 operator+(const Vector3& lhs, const UnitVector3& rhs) { return lhs + rhs.ToVector3(); }
+
+  Vector3 operator+(const UnitVector3& lhs, const Vector3& rhs) { return lhs.ToVector3() + rhs; }
+
+  Vector3 operator+(const UnitVector3& lhs, const UnitVector3& rhs) {
+    return lhs.ToVector3() + rhs.ToVector3();
+  }
+
   std::ostream& operator<<(std::ostream& os, const UnitVector3& v) {
     os << v.ToVector3();
     return os;
