@@ -10,6 +10,7 @@ namespace RayMan {
     constexpr double b() const noexcept { return _b; }
 
     static constexpr Color Black() { return {0, 0, 0}; }
+    static constexpr Color White() { return {1, 1, 1}; }
 
   private:
     double _r;
