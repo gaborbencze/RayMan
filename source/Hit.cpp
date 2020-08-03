@@ -4,9 +4,12 @@
 
 namespace RayMan {
 
-  static UnitVector3 GetFaceNormal(const UnitVector3& outwardNormal,
-                                   const UnitVector3& rayDirection) {
-    if (Dot(outwardNormal, rayDirection) < 0) {
+  static bool IsFrontFace(const UnitVector3& outwardNormal, const UnitVector3& rayDirection) {
+    return Dot(outwardNormal, rayDirection) < 0;
+  }
+
+  static UnitVector3 GetFaceNormal(const UnitVector3& outwardNormal, const bool isFrontFace) {
+    if (isFrontFace) {
       return outwardNormal;
     }
     return -outwardNormal;
@@ -15,6 +18,7 @@ namespace RayMan {
   Hit::Hit(const Point3& point, const UnitVector3& outwardNormal, const Ray& ray,
            const Material* material)
       : point(point),
-        normal(GetFaceNormal(outwardNormal, ray.GetDirection())),
+        isFrontFace(IsFrontFace(outwardNormal, ray.GetDirection())),
+        normal(GetFaceNormal(outwardNormal, isFrontFace)),
         material(material) {}
 }  // namespace RayMan

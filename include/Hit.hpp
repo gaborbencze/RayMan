@@ -9,6 +9,7 @@ namespace RayMan {
 
   struct Hit {
     Point3 point;
+    bool isFrontFace;
     UnitVector3 normal;
     const Material* material;
 
