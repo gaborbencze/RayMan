@@ -8,11 +8,6 @@
 #include "Ray.hpp"
 #include "UnitVector3.hpp"
 
-static RayMan::UnitVector3 Reflect(const RayMan::UnitVector3& v,
-                                   const RayMan::UnitVector3& normal) {
-  return RayMan::UnitVector3{v.ToVector3() - 2 * RayMan::Dot(v, normal) * normal.ToVector3()};
-}
-
 namespace RayMan {
   Metal::Metal(const Color& albedo, double fuzziness) : albedo(albedo), fuzziness(fuzziness) {
     assert(0 <= fuzziness && fuzziness <= 1);
