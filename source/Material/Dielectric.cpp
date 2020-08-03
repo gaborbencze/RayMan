@@ -1,5 +1,6 @@
 #include "Material/Dielectric.hpp"
 
+#include <algorithm>
 #include <cmath>
 
 #include "Color.hpp"
