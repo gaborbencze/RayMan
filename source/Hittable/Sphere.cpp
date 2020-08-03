@@ -1,5 +1,6 @@
 #include "Hittable/Sphere.hpp"
 
+#include <cassert>
 #include <cmath>
 
 #include "Hit.hpp"
@@ -7,7 +8,9 @@
 
 namespace RayMan {
   Sphere::Sphere(const Point3& center, double radius, std::shared_ptr<const Material> material)
-      : center(center), radius(radius), material(std::move(material)) {}
+      : center(center), radius(radius), material(std::move(material)) {
+    assert(radius > 0);
+  }
 
   std::optional<Hit> Sphere::GetHitImpl(const Ray& ray, double distMin, double distMax) const {
     using RayMan::Dot;
