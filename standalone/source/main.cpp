@@ -14,6 +14,7 @@
 #include "Hit.hpp"
 #include "Hittable/Sphere.hpp"
 #include "Image.hpp"
+#include "Material/Dielectric.hpp"
 #include "Material/Lambertian.hpp"
 #include "Material/Metal.hpp"
 #include "RandomUtils.hpp"
@@ -68,13 +69,13 @@ static RayMan::Color RayColor(const RayMan::Ray& ray, const RayMan::Scene& world
   return RayMan::Interpolate(skyBottomColor, skyTopColor, t);
 }
 
-static RayMan::Scene GetWorld() {
+[[maybe_unused]] static RayMan::Scene GetWorld() {
   RayMan::Scene world;
 
   // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
   const auto groundMaterial = std::make_shared<RayMan::Lambertian>(RayMan::Color(0.8, 0.8, 0));
   // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-  const auto centerMaterial = std::make_shared<RayMan::Lambertian>(RayMan::Color(0.2, 0.2, 1));
+  const auto centerMaterial = std::make_shared<RayMan::Dielectric>(1.5);
   // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
   const auto leftMaterial = std::make_shared<RayMan::Metal>(RayMan::Color(0.8, 0.8, 0.8), 0.02);
   // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
@@ -88,6 +89,93 @@ static RayMan::Scene GetWorld() {
   world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{-1, 0, 0}, 0.5, leftMaterial));
   // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
   world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3{1, 0, 0}, 0.5, rightMaterial));
+
+  return world;
+}
+
+[[maybe_unused]] static RayMan::Scene GetRandomWorld() {
+  RayMan::Scene world;
+
+  // ground
+  {
+    constexpr RayMan::Color groundColor(0.5, 0.5, 0.5);
+    constexpr auto groundRadius = 10'000;
+    const auto groundMaterial = std::make_shared<RayMan::Lambertian>(groundColor);
+    world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3(0, -groundRadius, 0), groundRadius,
+                                               groundMaterial));
+  }
+
+  constexpr auto mainSpereRadius = 1;
+  constexpr auto offset = 4;
+
+  const auto mainSpheres
+      = std::array<std::pair<RayMan::Point3, std::shared_ptr<RayMan::Material>>, 3>{
+          std::pair(RayMan::Point3{offset, mainSpereRadius, 0},
+                    std::make_shared<RayMan::Dielectric>(1.5)),
+          std::pair(RayMan::Point3{-offset, mainSpereRadius, 0},
+                    std::make_shared<RayMan::Lambertian>(RayMan::Color(0.05, 0.05, 0.8))),
+          std::pair(RayMan::Point3{0, mainSpereRadius, 0},
+                    std::make_shared<RayMan::Metal>(RayMan::Color(0.9, 0.05, 0.05), 0.2))};
+
+  for (const auto& sphere : mainSpheres) {
+    world.Add(std::make_unique<RayMan::Sphere>(sphere.first, mainSpereRadius, sphere.second));
+  }
+
+  // randomized small spheres
+  {
+    constexpr auto sceneSize = 11;
+    constexpr auto maxOffset = 0.3;
+    constexpr auto minRadius = 0.1;
+    constexpr auto maxRadius = 0.3;
+
+    constexpr auto GetRandomMaterial = []() -> std::shared_ptr<RayMan::Material> {
+      constexpr auto GetRandomColor = [] {
+        return RayMan::Color(RayMan::GetRandomDouble(0, 1), RayMan::GetRandomDouble(0, 1),
+                             RayMan::GetRandomDouble(0, 1));
+      };
+
+      const auto rnd = RayMan::GetRandomDouble(0, 1);
+
+      constexpr auto lamberdianProb = 0.8;
+      constexpr auto metalProb = 0.15 + lamberdianProb;
+
+      if (rnd < lamberdianProb) {
+        const auto albedo = GetRandomColor();
+        return std::make_shared<RayMan::Lambertian>(albedo);
+      }
+      if (rnd < metalProb) {
+        const auto albedo = GetRandomColor();
+        const auto fuzziness = RayMan::GetRandomDouble(0, 0.5);
+        return std::make_shared<RayMan::Metal>(albedo, fuzziness);
+      }
+      static const auto glassMaterial = std::make_shared<RayMan::Dielectric>(1.5);
+      return glassMaterial;
+    };
+
+    for (int x = -sceneSize; x <= sceneSize; ++x) {
+      for (int z = -sceneSize; z <= sceneSize; ++z) {
+        const auto IsCloseToMainSphere = [&mainSpheres](double x, double z) {
+          return std::find_if(
+                     begin(mainSpheres), end(mainSpheres),
+                     [x, z](const auto& sphereInfo) {
+                       const auto& [center, material] = sphereInfo;
+                       return (center - RayMan::Point3(x, mainSpereRadius, z)).length_square() < 1;
+                     })
+                 != end(mainSpheres);
+        };
+
+        const auto radius = RayMan::GetRandomDouble(minRadius, maxRadius);
+        const RayMan::Point3 center{x + RayMan::GetRandomDouble(-maxOffset, maxOffset), radius,
+                                    z + RayMan::GetRandomDouble(-maxOffset, maxOffset)};
+
+        if (IsCloseToMainSphere(center.x(), center.z())) {
+          continue;
+        }
+
+        world.Add(std::make_unique<RayMan::Sphere>(center, radius, GetRandomMaterial()));
+      }
+    }
+  }
 
   return world;
 }
@@ -131,13 +219,13 @@ static void RenderImageWorker(const RayMan::Camera& camera, const RayMan::Scene&
 
 static RayMan::Image RenderImage(int width, int height, double fov, int samples) {
   RayMan::Image img(height, width);
-  const RayMan::Point3 cameraPosition{2, -0.3, 3};
-  const RayMan::Point3 cameraTarget{0, 0, 0};
+  constexpr RayMan::Point3 cameraPosition{13, 2, 3};
+  constexpr RayMan::Point3 cameraTarget{0, 0, 0};
   const auto camera = RayMan::Camera::Create(cameraPosition, cameraTarget, fov,
-                                             static_cast<double>(width) / height, 0.15,
+                                             static_cast<double>(width) / height, 0.1,
                                              (cameraTarget - cameraPosition).length());
 
-  const RayMan::Scene world = GetWorld();
+  const RayMan::Scene world = GetRandomWorld();
 
   std::atomic<int> columnCounter(0);
   std::vector<std::thread> workers(std::thread::hardware_concurrency());
@@ -158,10 +246,10 @@ static RayMan::Image RenderImage(int width, int height, double fov, int samples)
                                option::MaxProgress{width}};
 
   while (columnCounter < width) {
-    progressBar.set_progress(columnCounter);
+    progressBar.set_progress(static_cast<float>(columnCounter));
 
     using namespace std::chrono_literals;
-    const auto updateDeltaTime = 100ms;
+    constexpr auto updateDeltaTime = 100ms;
     std::this_thread::sleep_for(updateDeltaTime);
   }
   show_console_cursor(true);
