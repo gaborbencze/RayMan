@@ -1,3 +1,4 @@
+#include <array>
 #include <atomic>
 #include <chrono>
 #include <cmath>
@@ -154,7 +155,7 @@ static RayMan::Color RayColor(const RayMan::Ray& ray, const RayMan::Scene& world
 
     for (int x = -sceneSize; x <= sceneSize; ++x) {
       for (int z = -sceneSize; z <= sceneSize; ++z) {
-        const auto IsCloseToMainSphere = [&mainSpheres](double x, double z) {
+        const auto IsCloseToMainSphere = [&mainSpheres](double x, double z) -> bool {
           return std::find_if(
                      begin(mainSpheres), end(mainSpheres),
                      [x, z](const auto& sphereInfo) {
