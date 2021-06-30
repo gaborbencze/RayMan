@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <thread>
+#include <vector>
 
 #include "Camera.hpp"
 #include "Hit.hpp"
@@ -69,7 +70,7 @@ static RayMan::Color RayColor(const RayMan::Ray& ray, const RayMan::Scene& world
 
   return RayMan::Interpolate(skyBottomColor, skyTopColor, t);
 }
-
+/*
 [[maybe_unused]] static RayMan::Scene GetWorld() {
   RayMan::Scene world;
 
@@ -93,17 +94,17 @@ static RayMan::Color RayColor(const RayMan::Ray& ray, const RayMan::Scene& world
 
   return world;
 }
-
+*/
 [[maybe_unused]] static RayMan::Scene GetRandomWorld() {
-  RayMan::Scene world;
+  std::vector<std::unique_ptr<RayMan::Hittable>> objects{};
 
   // ground
   {
     constexpr RayMan::Color groundColor(0.5, 0.5, 0.5);
     constexpr auto groundRadius = 10'000;
     const auto groundMaterial = std::make_shared<RayMan::Lambertian>(groundColor);
-    world.Add(std::make_unique<RayMan::Sphere>(RayMan::Point3(0, -groundRadius, 0), groundRadius,
-                                               groundMaterial));
+    objects.push_back(std::make_unique<RayMan::Sphere>(RayMan::Point3(0, -groundRadius, 0),
+                                                       groundRadius, groundMaterial));
   }
 
   constexpr auto mainSpereRadius = 1;
@@ -114,12 +115,13 @@ static RayMan::Color RayColor(const RayMan::Ray& ray, const RayMan::Scene& world
           std::pair(RayMan::Point3{offset, mainSpereRadius, 0},
                     std::make_shared<RayMan::Dielectric>(1.5)),
           std::pair(RayMan::Point3{-offset, mainSpereRadius, 0},
-                    std::make_shared<RayMan::Lambertian>(RayMan::Color(0.05, 0.05, 0.8))),
+                    std::make_shared<RayMan::Lambertian>(RayMan::Color(0.2, 0.2, 0.5))),
           std::pair(RayMan::Point3{0, mainSpereRadius, 0},
-                    std::make_shared<RayMan::Metal>(RayMan::Color(0.9, 0.05, 0.05), 0.2))};
+                    std::make_shared<RayMan::Metal>(RayMan::Color(0.85, 0.85, 0.85), 0.1))};
 
   for (const auto& sphere : mainSpheres) {
-    world.Add(std::make_unique<RayMan::Sphere>(sphere.first, mainSpereRadius, sphere.second));
+    objects.push_back(
+        std::make_unique<RayMan::Sphere>(sphere.first, mainSpereRadius, sphere.second));
   }
 
   // randomized small spheres
@@ -173,12 +175,12 @@ static RayMan::Color RayColor(const RayMan::Ray& ray, const RayMan::Scene& world
           continue;
         }
 
-        world.Add(std::make_unique<RayMan::Sphere>(center, radius, GetRandomMaterial()));
+        objects.push_back(std::make_unique<RayMan::Sphere>(center, radius, GetRandomMaterial()));
       }
     }
   }
 
-  return world;
+  return RayMan::Scene{std::move(objects)};
 }
 
 static RayMan::Color GetPixelColor(const RayMan::Image& image, const RayMan::Scene& world,
@@ -289,6 +291,8 @@ int main(int argc, char* argv[]) {
 
       PrintPPMImage(os, RenderImage(imageWidth, imageHeight, fov, samplesPerPixel));
     }
+  } catch (const std::exception& ex) {
+    std::cerr << "Exception: " << ex.what() << std::endl;
   } catch (...) {
     std::cerr << "An unexpected error occurred..." << std::endl;
   }

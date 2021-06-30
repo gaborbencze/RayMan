@@ -3,29 +3,19 @@
 #include <limits>
 
 #include "Hit.hpp"
+#include "Hittable/BVHNode.hpp"
 #include "Hittable/Hittable.hpp"
 #include "Ray.hpp"
 
 static constexpr double EPS = 1E-5;
 
 namespace RayMan {
-  Scene::Scene() = default;
+  Scene::Scene(Hittables objects) : objects(std::make_unique<BVHNode>(std::move(objects))) {}
+
   Scene::Scene(Scene&&) noexcept = default;
   Scene::~Scene() = default;
 
-  void Scene::Add(std::unique_ptr<Hittable> object) { objects.push_back(std::move(object)); }
-
   std::optional<Hit> Scene::GetHit(const Ray& ray) const {
-    std::optional<Hit> closestHit;
-    double distanceToClosest = std::numeric_limits<double>::infinity();
-
-    for (const auto& object : objects) {
-      if (const auto hit = object->GetHit(ray, EPS, distanceToClosest)) {
-        closestHit = hit;
-        distanceToClosest = ((hit->point) - ray.GetOrigin()).length();
-      }
-    }
-
-    return closestHit;
+    return objects->GetHit(ray, EPS, std::numeric_limits<double>::infinity());
   }
 }  // namespace RayMan
