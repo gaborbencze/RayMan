@@ -1,7 +1,9 @@
 #include "BoundingBox.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <functional>
+#include <utility>
 
 #include "Ray.hpp"
 
