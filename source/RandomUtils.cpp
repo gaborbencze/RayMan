@@ -8,10 +8,19 @@
 
 namespace RayMan {
 
+  static std::mt19937& GetGenerator() {
+    thread_local std::mt19937 generator;  // NOLINT
+    return generator;
+  }
+
+  std::size_t GetRandomIndex(std::size_t max) {
+    std::uniform_int_distribution<std::size_t> distribution(0, max);
+    return distribution(GetGenerator());
+  }
+
   double GetRandomDouble(double min, double max) {
-    static thread_local std::mt19937 generator;  // NOLINT
     std::uniform_real_distribution<double> distribution(min, max);
-    return distribution(generator);
+    return distribution(GetGenerator());
   }
 
   UnitVector3 GetRandomUnitVector() {
