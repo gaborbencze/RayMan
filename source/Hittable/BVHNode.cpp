@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <functional>
+#include <iterator>
 
 #include "Hit.hpp"
 #include "RandomUtils.hpp"
