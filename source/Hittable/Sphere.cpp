@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cmath>
 
+#include "BoundingBox.hpp"
 #include "Hit.hpp"
 #include "Ray.hpp"
 
@@ -10,6 +11,11 @@ namespace RayMan {
   Sphere::Sphere(const Point3& center, double radius, std::shared_ptr<const Material> material)
       : center(center), radius(radius), material(std::move(material)) {
     assert(radius > 0);
+  }
+
+  BoundingBox Sphere::GetBoundingBox() const {
+    const Vector3 diagonal{radius, radius, radius};
+    return BoundingBox(center - diagonal, center + diagonal);
   }
 
   std::optional<Hit> Sphere::GetHitImpl(const Ray& ray, double distMin, double distMax) const {
