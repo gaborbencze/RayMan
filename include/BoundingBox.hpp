@@ -7,6 +7,8 @@ namespace RayMan {
 
   class BoundingBox {
   public:
+    static BoundingBox Merge(const BoundingBox& lhs, const BoundingBox& rhs);
+
     BoundingBox(const Point3& min, const Point3& max);
 
     Point3 Min() const;

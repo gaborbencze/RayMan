@@ -8,6 +8,16 @@
 #include "Ray.hpp"
 
 namespace RayMan {
+  BoundingBox BoundingBox::Merge(const BoundingBox& lhs, const BoundingBox& rhs) {
+    const Point3 min{std::min(lhs.Min().x(), rhs.Min().x()), std::min(lhs.Min().y(), rhs.Min().y()),
+                     std::min(lhs.Min().z(), rhs.Min().z())};
+
+    const Point3 max{std::max(lhs.Max().x(), rhs.Max().x()), std::max(lhs.Max().y(), rhs.Max().y()),
+                     std::max(lhs.Max().z(), rhs.Max().z())};
+
+    return BoundingBox{min, max};
+  }
+
   BoundingBox::BoundingBox(const Point3& min, const Point3& max) : min(min), max(max) {
     assert(min.x() <= max.x());
     assert(min.y() <= max.y());
