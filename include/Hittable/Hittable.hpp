@@ -1,6 +1,8 @@
 #pragma once
 
+#include <memory>
 #include <optional>
+#include <vector>
 
 namespace RayMan {
   struct Hit;
@@ -19,4 +21,6 @@ namespace RayMan {
   private:
     virtual std::optional<Hit> GetHitImpl(const Ray& ray, double distMin, double distMax) const = 0;
   };
+
+  using Hittables = std::vector<std::unique_ptr<Hittable>>;
 }  // namespace RayMan
